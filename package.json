@@ -1,0 +1,27 @@
+{
+  "name": "@bam.tech/react-navigation-live-reload-on-screen",
+  "version": "0.1.0",
+  "description": "Make live reload to stay on current screen with react-navigation",
+  "main": "index.tsx",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bamlab/react-navigation-live-reload-on-screen.git"
+  },
+  "keywords": [
+    "react-navigation",
+    "react-native"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "@react-native-community/async-storage": "*",
+    "@react-navigation/native": "*"
+  },
+  "author": "Almouro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bamlab/react-navigation-live-reload-on-screen/issues"
+  },
+  "homepage": "https://github.com/bamlab/react-navigation-live-reload-on-screen#readme"
+}
