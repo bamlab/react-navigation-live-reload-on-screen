@@ -5,13 +5,17 @@ import {
   NavigationContainer,
   NavigationState,
   NavigationContainerRef,
+  NavigationContainerProps,
+  Theme,
+  LinkingOptions,
+  DocumentTitleOptions,
 } from "@react-navigation/native";
 export const PERSISTENCE_KEY = "NAVIGATION_STATE";
 
 // Taken from https://reactnavigation.org/docs/state-persistence
 export const useLiveReloadOnScreen = (): {
   waitForLiveReload: boolean;
-  props: Partial<React.ComponentProps<typeof NavigationContainer>>;
+  props: Partial<NavigationContainerProps>;
 } => {
   const [isReady, setIsReady] = React.useState(false);
   const [initialState, setInitialState] = React.useState();
@@ -55,15 +59,28 @@ export const useLiveReloadOnScreen = (): {
   };
 };
 
+// Taken directly from react-navigation definitions to type the HOC below
+declare type NavigationContainerType<Params extends {}> = (
+  props: NavigationContainerProps & {
+    theme?: Theme | undefined;
+    linking?: LinkingOptions<Params> | undefined;
+    fallback?: React.ReactNode;
+    documentTitle?: DocumentTitleOptions | undefined;
+    onReady?: (() => void) | undefined;
+  } & {
+    ref?: React.Ref<NavigationContainerRef<Params>> | undefined;
+  }
+) => React.ReactElement;
+
 export const enableLiveReloadOnScreen =
   (enable: boolean) =>
-  (
-    NavigationContainerComponent: typeof NavigationContainer
-  ): typeof NavigationContainer => {
+  <Params extends {} = {}>(
+    NavigationContainerComponent: NavigationContainerType<Params>
+  ) => {
     if (enable) {
       const LiveReloadNavigationContainer = (
-        props: React.ComponentProps<typeof NavigationContainer>,
-        ref: React.Ref<NavigationContainerRef> | undefined
+        props: React.ComponentProps<NavigationContainerType<Params>>,
+        ref: React.Ref<NavigationContainerRef<Params>> | undefined
       ) => {
         const { waitForLiveReload, props: liveReloadProps } =
           useLiveReloadOnScreen();
@@ -86,8 +103,8 @@ export const enableLiveReloadOnScreen =
       };
 
       return React.forwardRef<
-        NavigationContainerRef,
-        React.ComponentProps<typeof NavigationContainer>
+        NavigationContainerRef<Params>,
+        React.ComponentProps<NavigationContainerType<Params>>
       >(LiveReloadNavigationContainer);
     }
 
