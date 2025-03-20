@@ -16,7 +16,8 @@ import { NavigationContainer as ReactNavigationContainer } from "@react-navigati
 import { enableLiveReloadOnScreen } from "@bam.tech/react-navigation-live-reload-on-screen";
 
 const ENABLE_LIVE_RELOAD = __DEV__;
-const NavigationContainer = enableLiveReloadOnScreen(ENABLE_LIVE_RELOAD)(
+const ENABLE_LIVE_RELOAD_LOGS = true;
+const NavigationContainer = enableLiveReloadOnScreen(ENABLE_LIVE_RELOAD, ENABLE_LIVE_RELOAD_LOGS)(
   ReactNavigationContainer
 );
 

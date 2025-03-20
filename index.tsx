@@ -9,6 +9,7 @@ import {
   Theme,
   LinkingOptions,
   DocumentTitleOptions,
+  InitialState,
 } from "@react-navigation/native";
 export const PERSISTENCE_KEY = "NAVIGATION_STATE";
 
@@ -73,7 +74,7 @@ declare type NavigationContainerType<Params extends {}> = (
 ) => React.ReactElement;
 
 export const enableLiveReloadOnScreen =
-  (enable: boolean) =>
+  (enable: boolean, logs: boolean = true) =>
   <Params extends {} = {}>(
     NavigationContainerComponent: NavigationContainerType<Params>
   ) => {
@@ -84,6 +85,18 @@ export const enableLiveReloadOnScreen =
       ) => {
         const { waitForLiveReload, props: liveReloadProps } =
           useLiveReloadOnScreen();
+
+        React.useEffect(() => {
+          if (logs && !waitForLiveReload) {
+            const activeRouteName = getActiveRouteName(liveReloadProps.initialState);
+            if (activeRouteName) {
+              console.log("[Live Reload on Screen] App reloaded on", activeRouteName);
+            } else {
+              console.log("[Live Reload on Screen] No reload, either because the app was opened with a deep link or because this is the first time the app has been launched");
+            }
+          }
+        }, [waitForLiveReload]);
+
         if (waitForLiveReload) return null;
 
         const onStateChange = (state: NavigationState | undefined) => {
@@ -113,3 +126,19 @@ export const enableLiveReloadOnScreen =
 
 export const clearNavigationState = (): Promise<void> =>
   AsyncStorage.removeItem(PERSISTENCE_KEY);
+
+const getActiveRouteName = (navigationState?: InitialState): string | null => {
+  if (!navigationState) return null;
+
+  const { index, routes } = navigationState;
+  if (index === undefined || index >= routes.length) return null;
+
+  const activeRoute = routes[index];
+
+  // If the active route has a nested state, recurse
+  if (activeRoute.state) {
+    return getActiveRouteName(activeRoute.state);
+  }
+
+  return activeRoute.name;
+};
